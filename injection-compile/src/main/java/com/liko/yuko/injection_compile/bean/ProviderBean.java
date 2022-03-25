@@ -8,4 +8,6 @@ public class ProviderBean {
     public String providerName;
     public boolean isStatic;
     public boolean isConstructor;
+    public boolean isSingle;
+    public String tag;
 }

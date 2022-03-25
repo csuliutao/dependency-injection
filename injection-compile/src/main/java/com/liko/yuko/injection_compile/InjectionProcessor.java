@@ -1,5 +1,6 @@
 package com.liko.yuko.injection_compile;
 
+import com.liko.yuko.injection.Inject;
 import com.liko.yuko.injection.Injector;
 import com.liko.yuko.injection.Provider;
 import com.liko.yuko.injection_compile.bean.InjectorBean;
@@ -46,7 +47,7 @@ public class InjectionProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> types = new HashSet<>();
-        types.add(Injector.class.getName());
+        types.add(Inject.class.getName());
         types.add(Provider.class.getName());
         return types;
     }

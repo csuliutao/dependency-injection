@@ -5,6 +5,8 @@ import com.liko.yuko.injection.Provider;
 import com.liko.yuko.injection_compile.bean.InjectorBean;
 import com.liko.yuko.injection_compile.bean.ProviderBean;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,19 +28,37 @@ public class InjectorCollector implements Collector<InjectorBean>{
             if (element.getKind() != ElementKind.FIELD) {
                 continue;
             }
-            InjectorBean bean = new InjectorBean();
-            bean.fieldName = element.getSimpleName().toString();
+
+
             String fullCls = ((TypeElement)element.getEnclosingElement()).getQualifiedName().toString();
             int index = fullCls.lastIndexOf('.');
-            bean.clsPkg = fullCls.substring(0, index);
-            bean.clsName = fullCls.substring(index + 1);
+            String clsPkg = fullCls.substring(0, index);
+            String clsName = fullCls.substring(index + 1);
+            InjectorBean bean = new InjectorBean();
+            bean.clsName = clsName;
+            bean.clsPkg = clsPkg;
 
+            boolean alreadyCls = false;
+            for (InjectorBean temp : beans) {
+                if (bean.equals(temp)) {
+                    alreadyCls = true;
+                    bean = temp;
+                    break;
+                }
+            }
+
+            String fieldName = element.getSimpleName().toString();
             String provideCls = element.asType().toString();
             index = provideCls.lastIndexOf('.');
-            bean.injectPkg = provideCls.substring(0, index);
-            bean.injectName = provideCls.substring(index + 1);
+            String injectPkg = provideCls.substring(0, index);
+            String injectName = provideCls.substring(index + 1);
+            String tag = element.getAnnotation(Inject.class).tag();
 
-            beans.add(bean);
+            bean.addInject(injectPkg, injectName, fieldName, tag);
+
+            if (!alreadyCls) {
+                beans.add(bean);
+            }
         }
 
         return beans;

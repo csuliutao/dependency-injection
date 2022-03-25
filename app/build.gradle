@@ -32,4 +32,11 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+
+    implementation project(path: ':base-rules')
+    implementation project(path: ':injection')
+    annotationProcessor project(path: ':injection-compile')
+    implementation project(path: ':test-1')
+    implementation project(path: ':test-2')
 }
