@@ -30,14 +30,27 @@ public class InjectorCollector implements Collector<InjectorBean>{
                 continue;
             }
 
+            if (!(element.getEnclosingElement() instanceof TypeElement)) {
+                throw new RuntimeException("inject must be clss field!!, "
+                        + element.getSimpleName().toString());
+            }
 
-            String fullCls = ((TypeElement)element.getEnclosingElement()).getQualifiedName().toString();
-            int index = fullCls.lastIndexOf('.');
-            String clsPkg = fullCls.substring(0, index);
-            String clsName = fullCls.substring(index + 1);
             InjectorBean bean = new InjectorBean();
-            bean.clsName = clsName;
-            bean.clsPkg = clsPkg;
+            TypeElement inCls = (TypeElement) element.getEnclosingElement();
+            bean.clsPkg = elementUtils.getPackageOf(inCls).toString();
+            bean.clsName = inCls.getQualifiedName().toString().replace(bean.clsPkg + '.', "");
+
+            Element pre = element.getEnclosingElement();
+            Element now = pre.getEnclosingElement();
+            while (now != null && now.getKind() != ElementKind.PACKAGE) {
+                if (!pre.getModifiers().contains(Modifier.STATIC)) {
+                    throw new RuntimeException("Inner class must static, " +
+                            bean.clsPkg + '.' + bean.clsName);
+                }
+
+                pre = now;
+                now = pre.getEnclosingElement();
+            }
 
             boolean alreadyCls = false;
             for (InjectorBean temp : beans) {
@@ -50,9 +63,9 @@ public class InjectorCollector implements Collector<InjectorBean>{
 
             String fieldName = element.getSimpleName().toString();
             String provideCls = element.asType().toString();
-            index = provideCls.lastIndexOf('.');
-            String injectPkg = provideCls.substring(0, index);
-            String injectName = provideCls.substring(index + 1);
+            TypeElement prvCls = elementUtils.getTypeElement(provideCls);
+            String injectPkg = elementUtils.getPackageOf(prvCls).toString();
+            String injectName = provideCls.replace(injectPkg + '.', "");
             String tag = element.getAnnotation(Inject.class).tag();
 
             bean.addInject(injectPkg, injectName, fieldName, tag);

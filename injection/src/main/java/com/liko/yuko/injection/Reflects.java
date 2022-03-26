@@ -19,7 +19,10 @@ public final class Reflects {
         if (instance == null) {
             return null;
         }
-        String name = instance.getClass().getPackage().getName() + '.' + getInjectorName(instance.getClass());
+        String pkg = instance.getClass().getPackage().getName();
+        String simpleName = instance.getClass().getName().replace(pkg + '.', "");
+
+        String name = pkg + '.' + getInjectorName(simpleName.replace('$', '_'));
         Class cls = Class.forName(name);
         return (Injector) cls.newInstance();
     }
@@ -32,7 +35,7 @@ public final class Reflects {
     }
 
     public static String getInjectorName(String name){
-        return INJECTION_PREFIX + name + INJECTOR_SUFFIX;
+        return INJECTION_PREFIX + name.replace('.', '_') + INJECTOR_SUFFIX;
     }
 
     public static String getFactoryName(Class cls, String tag){

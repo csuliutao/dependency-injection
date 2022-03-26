@@ -29,7 +29,7 @@ public class InjectorWriter implements Writer<InjectorBean>{
                             ClassName.get(Injector.class), ClassName.get(bean.clsPkg, bean.clsName)
                     ));
 
-            String paramsName = "_" + bean.clsName;
+            String paramsName = "_" + bean.clsName.replace('.', '_');
             MethodSpec.Builder inject = MethodSpec.methodBuilder("inject")
                     .addAnnotation(ClassName.get(Override.class))
                     .addParameter(ClassName.get(bean.clsPkg, bean.clsName), paramsName)

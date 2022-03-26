@@ -24,7 +24,6 @@ import javax.lang.model.util.Elements;
 
 public class InjectionProcessor extends AbstractProcessor {
     private Filer filer;
-    private Messager messager;
     private Elements elements;
 
     @Override
@@ -32,7 +31,6 @@ public class InjectionProcessor extends AbstractProcessor {
         super.init(processingEnvironment);
         processingEnvironment.getFiler();
         filer = processingEnvironment.getFiler();
-        messager = processingEnvironment.getMessager();
         elements = processingEnvironment.getElementUtils();
     }
 

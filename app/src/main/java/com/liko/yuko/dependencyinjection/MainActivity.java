@@ -17,8 +17,8 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     User user;
 
-    @Inject(tag = "main")
-    User main;
+    @Inject
+    InnerUser main;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +26,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Injection.inject(this);
         Log.d("liutao", user.print() + ',' + main.print());
+        new Main();
+    }
+
+    public static class Main{
+        @Inject
+        User user;
+
+        public Main() {
+            Injection.inject(this);
+            Log.d("liutao", user.print() + " from inner inject");
+        }
     }
 
     public static class InnerUser implements User {
