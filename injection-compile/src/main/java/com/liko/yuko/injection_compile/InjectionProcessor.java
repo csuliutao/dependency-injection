@@ -20,10 +20,12 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 public class InjectionProcessor extends AbstractProcessor {
     private Filer filer;
     private Messager messager;
+    private Elements elements;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
@@ -31,15 +33,16 @@ public class InjectionProcessor extends AbstractProcessor {
         processingEnvironment.getFiler();
         filer = processingEnvironment.getFiler();
         messager = processingEnvironment.getMessager();
+        elements = processingEnvironment.getElementUtils();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
-        Set<ProviderBean> providerBeans = new ProviderCollector().collect(roundEnvironment);
+        Set<ProviderBean> providerBeans = new ProviderCollector().collect(roundEnvironment, elements);
         Set<String> handled = new HashSet<>();
         new ProviderWriter().handle(filer, handled, providerBeans);
 
-        Set<InjectorBean> injectorBeans = new InjectorCollector().collect(roundEnvironment);
+        Set<InjectorBean> injectorBeans = new InjectorCollector().collect(roundEnvironment, elements);
         new InjectorWriter().handle(filer, handled, injectorBeans);
         return false;
     }

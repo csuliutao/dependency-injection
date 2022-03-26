@@ -4,7 +4,7 @@ import com.liko.yuko.base_rules.User;
 import com.liko.yuko.injection.Provider;
 
 public class MainUser implements User {
-    @Provider(tag = "main", name = "com.liko.yuko.base_rules.User")
+    @Provider(tag = "main")
     public MainUser() {}
 
     @Override

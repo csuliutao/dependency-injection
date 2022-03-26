@@ -12,11 +12,11 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.swing.plaf.TextUI;
+import javax.lang.model.util.Elements;
 
 public class ProviderCollector implements Collector<ProviderBean>{
     @Override
-    public Set<ProviderBean> collect(RoundEnvironment roundEnvironment) {
+    public Set<ProviderBean> collect(RoundEnvironment roundEnvironment, Elements elementUtils) {
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(Provider.class);
         if (elements == null || elements.isEmpty()) {
             return null;
@@ -33,10 +33,9 @@ public class ProviderCollector implements Collector<ProviderBean>{
             }
 
             ProviderBean bean = new ProviderBean();
-            String fullCls = ((TypeElement)element.getEnclosingElement()).getQualifiedName().toString();
-            int index = fullCls.lastIndexOf('.');
-            bean.clsPkg = fullCls.substring(0, index);
-            bean.clsName = fullCls.substring(index + 1);
+            TypeElement cls = ((TypeElement)element.getEnclosingElement());
+            bean.clsPkg = elementUtils.getPackageOf(cls).toString();
+            bean.clsName = cls.getQualifiedName().toString().replace(bean.clsPkg + '.', "");
 
             Element pre = element.getEnclosingElement();
             Element now = pre.getEnclosingElement();
@@ -45,9 +44,6 @@ public class ProviderCollector implements Collector<ProviderBean>{
                     throw new RuntimeException("Inner class must static, " +
                             bean.clsPkg + '.' + bean.clsName);
                 }
-                index = bean.clsPkg.lastIndexOf('.');
-                bean.clsName = bean.clsPkg.substring(index + 1) + '.' + bean.clsName;
-                bean.clsPkg = bean.clsPkg.substring(0, index);
 
                 pre = now;
                 now = pre.getEnclosingElement();
@@ -64,14 +60,16 @@ public class ProviderCollector implements Collector<ProviderBean>{
                     bean.providerName = bean.clsName;
                 } else {
                     provideCls = ((ExecutableElement) element).getReturnType().toString();
-                    index = provideCls.lastIndexOf('.');
-                    bean.providerPkg = provideCls.substring(0, index);
-                    bean.providerName = provideCls.substring(index + 1);
+                    TypeElement proCls = elementUtils.getTypeElement(provideCls);
+                    bean.providerPkg = elementUtils.getPackageOf(proCls).toString();
+                    bean.providerName = proCls.getQualifiedName().toString()
+                            .replace(bean.providerPkg + '.', "");
                 }
             } else {
-                index = provideCls.lastIndexOf('.');
-                bean.providerPkg = provideCls.substring(0, index);
-                bean.providerName = provideCls.substring(index + 1);
+                TypeElement proCls = elementUtils.getTypeElement(provideCls);
+                bean.providerPkg = elementUtils.getPackageOf(proCls).toString();
+                bean.providerName = proCls.getQualifiedName().toString()
+                        .replace(bean.providerPkg + '.', "");
             }
 
 

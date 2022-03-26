@@ -15,10 +15,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 public class InjectorCollector implements Collector<InjectorBean>{
     @Override
-    public Set<InjectorBean> collect(RoundEnvironment roundEnvironment) {
+    public Set<InjectorBean> collect(RoundEnvironment roundEnvironment, Elements elementUtils) {
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(Inject.class);
         if (elements == null || elements.isEmpty()) {
             return null;
