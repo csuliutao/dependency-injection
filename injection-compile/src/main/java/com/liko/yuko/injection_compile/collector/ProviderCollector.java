@@ -23,17 +23,19 @@ public class ProviderCollector implements Collector<ProviderBean>{
         }
         HashSet<ProviderBean> beans = new HashSet<>(elements.size() * 3 / 4 + 1);
         for (Element element : elements) {
-            if (element.getKind() != ElementKind.CONSTRUCTOR && element.getKind() != ElementKind.METHOD) {
+            if (element.getKind() != ElementKind.CLASS && element.getKind() != ElementKind.METHOD) {
                 continue;
             }
-            if (element.getEnclosingElement().getKind() != ElementKind.CLASS) {
+            if (element.getKind() == ElementKind.METHOD && element.getEnclosingElement().getKind() != ElementKind.CLASS) {
                 throw new RuntimeException("provider method must in class, " +
                         element.getEnclosingElement().asType().toString() + ","
                         + element.getSimpleName());
             }
 
             ProviderBean bean = new ProviderBean();
-            TypeElement cls = ((TypeElement)element.getEnclosingElement());
+
+            TypeElement cls = element.getKind() == ElementKind.METHOD ?
+                    ((TypeElement)element.getEnclosingElement()) :(TypeElement) element;
             bean.clsPkg = elementUtils.getPackageOf(cls).toString();
             bean.clsName = cls.getQualifiedName().toString().replace(bean.clsPkg + '.', "");
 
@@ -49,13 +51,13 @@ public class ProviderCollector implements Collector<ProviderBean>{
                 now = pre.getEnclosingElement();
             }
 
-            bean.isConstructor = element.getKind() == ElementKind.CONSTRUCTOR;
+            bean.isConstructor = element.getKind() == ElementKind.CLASS;
             bean.isStatic = element.getModifiers().contains(Modifier.STATIC);
             bean.methodName = element.getSimpleName().toString();
 
             String provideCls = element.getAnnotation(Provider.class).name();
             if (provideCls == null || "".equals(provideCls)) {
-                if (element.getKind() == ElementKind.CONSTRUCTOR) {
+                if (element.getKind() == ElementKind.CLASS) {
                     bean.providerPkg = bean.clsPkg;
                     bean.providerName = bean.clsName;
                 } else {

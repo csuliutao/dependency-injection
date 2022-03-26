@@ -39,10 +39,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Provider()
     public static class InnerUser implements User {
-
-        @Provider()
-        public InnerUser() {}
 
         @Override
         public String print() {

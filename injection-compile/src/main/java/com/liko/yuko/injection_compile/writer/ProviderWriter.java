@@ -60,14 +60,14 @@ public class ProviderWriter implements Writer<ProviderBean>{
                 factory.addField(single);
 
                 get.beginControlFlow("if ($L == null)", singleName);
-                if (bean.isStatic) {
+                if (bean.isConstructor) {
+                    get.addStatement("$L = new $T()", singleName,
+                            ClassName.get(bean.clsPkg, bean.clsName));
+                } else if (bean.isStatic) {
                     get.addStatement("$L = $T.$L()", singleName,
                             ClassName.get(bean.clsPkg, bean.clsName),
                             bean.methodName);
-                } else if (bean.isConstructor) {
-                    get.addStatement("$L = new $T()", singleName,
-                            ClassName.get(bean.clsPkg, bean.clsName));
-                } else {
+                } else  {
                     get.addStatement("$L = new $T().$L()", singleName,
                             ClassName.get(bean.clsPkg, bean.clsName),
                             bean.methodName);
@@ -75,14 +75,14 @@ public class ProviderWriter implements Writer<ProviderBean>{
                 get.endControlFlow()
                         .addStatement("return $L", singleName);
             } else {
-                if (bean.isStatic) {
+                if (bean.isConstructor) {
+                    get.addStatement("return new $T()",
+                            ClassName.get(bean.clsPkg, bean.clsName));
+                } else if (bean.isStatic) {
                     get.addStatement("return $T.$L()",
                             ClassName.get(bean.clsPkg, bean.clsName),
                             bean.methodName);
-                } else if (bean.isConstructor) {
-                    get.addStatement("return new $T()",
-                            ClassName.get(bean.clsPkg, bean.clsName));
-                } {
+                } else {
                     get.addStatement("return new $T().$L()",
                             ClassName.get(bean.clsPkg, bean.clsName),
                             bean.methodName);
