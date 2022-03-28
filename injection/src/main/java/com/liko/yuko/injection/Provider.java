@@ -8,7 +8,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)
 public @interface Provider {
-    boolean single() default true;
-    String tag() default "";
-    String name() default "";
+    String value() default "";
 }

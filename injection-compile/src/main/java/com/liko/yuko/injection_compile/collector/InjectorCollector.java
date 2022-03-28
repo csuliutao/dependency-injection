@@ -1,7 +1,9 @@
 package com.liko.yuko.injection_compile.collector;
 
+import com.liko.yuko.injection.AssignClass;
 import com.liko.yuko.injection.Inject;
 import com.liko.yuko.injection.Provider;
+import com.liko.yuko.injection_compile.Utils;
 import com.liko.yuko.injection_compile.bean.InjectorBean;
 import com.liko.yuko.injection_compile.bean.ProviderBean;
 
@@ -62,13 +64,16 @@ public class InjectorCollector implements Collector<InjectorBean>{
             }
 
             String fieldName = element.getSimpleName().toString();
-            String provideCls = element.asType().toString();
+            String provideCls = Utils.getClsNameByClassAnnotation(element, AssignClass.class);
+            if (provideCls == null) {
+                provideCls = element.asType().toString();
+            }
             TypeElement prvCls = elementUtils.getTypeElement(provideCls);
             String injectPkg = elementUtils.getPackageOf(prvCls).toString();
             String injectName = provideCls.replace(injectPkg + '.', "");
-            String tag = element.getAnnotation(Inject.class).tag();
+            String tag = element.getAnnotation(Inject.class).value();
 
-            bean.addInject(injectPkg, injectName, fieldName, tag);
+            bean.addInject(injectPkg, injectName, fieldName, Utils.getTag(tag));
 
             if (!alreadyCls) {
                 beans.add(bean);

@@ -1,6 +1,9 @@
 package com.liko.yuko.injection_compile.collector;
 
+import com.liko.yuko.injection.AssignClass;
 import com.liko.yuko.injection.Provider;
+import com.liko.yuko.injection.Single;
+import com.liko.yuko.injection_compile.Utils;
 import com.liko.yuko.injection_compile.bean.ProviderBean;
 
 import java.util.HashSet;
@@ -55,7 +58,7 @@ public class ProviderCollector implements Collector<ProviderBean>{
             bean.isStatic = element.getModifiers().contains(Modifier.STATIC);
             bean.methodName = element.getSimpleName().toString();
 
-            String provideCls = element.getAnnotation(Provider.class).name();
+            String provideCls = Utils.getClsNameByClassAnnotation(element, AssignClass.class);
             if (provideCls == null || "".equals(provideCls)) {
                 if (element.getKind() == ElementKind.CLASS) {
                     bean.providerPkg = bean.clsPkg;
@@ -74,10 +77,8 @@ public class ProviderCollector implements Collector<ProviderBean>{
                         .replace(bean.providerPkg + '.', "");
             }
 
-
-
-            bean.tag = element.getAnnotation(Provider.class).tag();
-            bean.isSingle = element.getAnnotation(Provider.class).single();
+            bean.tag = Utils.getTag(element.getAnnotation(Provider.class).value());
+            bean.isSingle = element.getAnnotation(Single.class) != null;
 
             beans.add(bean);
         }
