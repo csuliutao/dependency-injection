@@ -1,5 +1,5 @@
-include ':test-2'
-include ':test-1'
+/*include ':test-2'
+include ':test-1'*/
 include ':base-rules'
 include ':injection'
 include ':injection-compile'

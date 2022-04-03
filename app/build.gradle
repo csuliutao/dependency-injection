@@ -37,6 +37,6 @@ dependencies {
     implementation project(path: ':base-rules')
     implementation project(path: ':injection')
     annotationProcessor project(path: ':injection-compile')
-    implementation project(path: ':test-1')
-    implementation project(path: ':test-2')
+    /*implementation project(path: ':test-1')
+    implementation project(path: ':test-2')*/
 }

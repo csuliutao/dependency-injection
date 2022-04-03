@@ -16,8 +16,6 @@
             <option value="$PROJECT_DIR$/base-rules" />
             <option value="$PROJECT_DIR$/injection" />
             <option value="$PROJECT_DIR$/injection-compile" />
-            <option value="$PROJECT_DIR$/test-1" />
-            <option value="$PROJECT_DIR$/test-2" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
